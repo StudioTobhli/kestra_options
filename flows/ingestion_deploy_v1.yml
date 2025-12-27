@@ -1,0 +1,21 @@
+id: ingestion_deploy
+namespace: company.team
+
+tasks:
+  - id: code
+    type: io.kestra.plugin.scripts.python.Commands
+    namespaceFiles:
+      enabled: true
+    taskRunner:
+      type: io.kestra.plugin.core.runner.Process
+#      type: io.kestra.plugin.scripts.runner.docker.Docker
+    containerImage: ghcr.io/kestra-io/pydata:latest
+    beforeCommands:
+      - pip install yfinance
+      - pip install gspread
+      - pip install sqlalchemy
+      - pip install psycopg2-binary
+      - pip install pandas
+    commands:
+      - python put_data_ingest.py
+      - python holdings_ingest.py
