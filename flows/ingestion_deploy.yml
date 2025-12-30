@@ -12,7 +12,7 @@ tasks:
       networkMode: "kestra_options_default"
     containerImage: ghcr.io/kestra-io/pydata:latest
     commands:
-      - python put_data_ingest.py
+      - python /app/scripts/put_data_ingest.py
 
   - id: holdings_ingest
     type: io.kestra.plugin.scripts.python.Commands
@@ -24,4 +24,4 @@ tasks:
       networkMode: "kestra_options_default"
     containerImage: ghcr.io/kestra-io/pydata:latest
     commands:
-      - python holdings_ingest.py
+      - python /app/scripts/holdings_ingest.py

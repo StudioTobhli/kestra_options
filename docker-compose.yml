@@ -55,7 +55,13 @@ services:
       - kestra_data:/app/storage
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp/kestra-wd:/tmp/kestra-wd
+      - ./scripts_for_flow:/app/scripts
+      - ./flows:/app/flows
     environment:
+      GIT_USERNAME: ${GIT_USERNAME}
+      GIT_TOKEN: ${GIT_TOKEN}
+      GIT_REPO_URL: ${GIT_REPO_URL}
+
       KESTRA_CONFIGURATION: |
         datasources:
           postgres:
