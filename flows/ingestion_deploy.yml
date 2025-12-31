@@ -2,6 +2,15 @@ id: ingestion_deploy
 namespace: company.team
 
 tasks:
+  - id: git_namespace_sync
+    type: io.kestra.plugin.git.SyncNamespaceFiles
+    namespace: company.team
+    gitDirectory: scripts_for_flow
+    url: "{{ secret('GIT_REPO_URL') }}"
+    username: "{{ secret('GIT_USERNAME') }}"
+    password: "{{ secret('GIT_TOKEN') }}"
+    branch: main
+    
   - id: put_data_ingest
     type: io.kestra.plugin.scripts.python.Commands
     namespaceFiles:
@@ -12,7 +21,7 @@ tasks:
       networkMode: "kestra_options_default"
     containerImage: ghcr.io/kestra-io/pydata:latest
     commands:
-      - python /app/scripts/put_data_ingest.py
+      - python put_data_ingest.py
 
   - id: holdings_ingest
     type: io.kestra.plugin.scripts.python.Commands
@@ -24,4 +33,16 @@ tasks:
       networkMode: "kestra_options_default"
     containerImage: ghcr.io/kestra-io/pydata:latest
     commands:
-      - python /app/scripts/holdings_ingest.py
+      - python holdings_ingest.py
+
+  - id: call_data_ingest
+    type: io.kestra.plugin.scripts.python.Commands
+    namespaceFiles:
+      enabled: true
+    taskRunner:
+      type: io.kestra.plugin.scripts.runner.docker.Docker
+      image: options_python_img:latest
+      networkMode: "kestra_options_default"
+    containerImage: ghcr.io/kestra-io/pydata:latest
+    commands:
+      - python call_data_ingest.py

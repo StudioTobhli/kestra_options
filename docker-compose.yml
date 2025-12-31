@@ -57,11 +57,9 @@ services:
       - /tmp/kestra-wd:/tmp/kestra-wd
       - ./scripts_for_flow:/app/scripts
       - ./flows:/app/flows
+    env_file:
+      - .env_encoded
     environment:
-      GIT_USERNAME: ${GIT_USERNAME}
-      GIT_TOKEN: ${GIT_TOKEN}
-      GIT_REPO_URL: ${GIT_REPO_URL}
-
       KESTRA_CONFIGURATION: |
         datasources:
           postgres:
