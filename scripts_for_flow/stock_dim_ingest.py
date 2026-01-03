@@ -39,8 +39,8 @@ os.getcwd()
 # ### Get holdings tickers
 
 # Use postgres docker service name when running this in Kestra docker container
-engine = create_engine('postgresql://root:root@localhost:5432/option_data')
-# engine = create_engine('postgresql://root:root@pgdatabase:5432/option_data')
+# engine = create_engine('postgresql://root:root@localhost:5432/option_data')
+engine = create_engine('postgresql://root:root@pgdatabase:5432/option_data')
 
 
 holdings_sql = """
