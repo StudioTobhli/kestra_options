@@ -103,10 +103,6 @@ for ticker in unique_tickers:
 # Create the final dataframe
 stock_dim_df = pd.DataFrame(data_list)
 
-
-stock_dim_df.head()
-
-
 # Keep only records with valid current price (iow did not trigger data fetch error)
 # - Only worried about current price for now.  But, use the below to cut out records w/ missing 52-week high/lows
 # stock_dim_df = stock_dim_df.dropna(subset=['current_price', 'week_52_high', 'week_52_low']).reset_index(drop=True)
@@ -128,7 +124,6 @@ column_typ_dict = {
 # Only write the first row without any data.  This creates the table with no data
 # not sure if this will work, or if I need to create schema first
 stock_dim_df.head(n=0).to_sql(name='stock_dim_data', con=engine, dtype=column_typ_dict, if_exists='replace', index=False)
-
 
 # write table to postgres
 t_start = time()

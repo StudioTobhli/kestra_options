@@ -46,3 +46,15 @@ tasks:
     containerImage: ghcr.io/kestra-io/pydata:latest
     commands:
       - python call_data_ingest.py
+
+  - id: stock_dim_ingest
+    type: io.kestra.plugin.scripts.python.Commands
+    namespaceFiles:
+      enabled: true
+    taskRunner:
+      type: io.kestra.plugin.scripts.runner.docker.Docker
+      image: options_python_img:latest
+      networkMode: "kestra_options_default"
+    containerImage: ghcr.io/kestra-io/pydata:latest
+    commands:
+      - python stock_dim_ingest.py
