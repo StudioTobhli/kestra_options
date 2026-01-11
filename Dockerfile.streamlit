@@ -1,0 +1,13 @@
+FROM options_python_img:latest
+
+# Add Streamlit
+RUN pip install --no-cache-dir streamlit
+
+# Set working directory
+WORKDIR /app/scripts
+
+# Expose Streamlit port
+EXPOSE 8501
+
+# Run Streamlit
+CMD ["streamlit", "run", "dashboard.py", "--server.port=8501", "--server.address=0.0.0.0"]

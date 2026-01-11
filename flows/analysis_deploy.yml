@@ -1,0 +1,25 @@
+# flows/analysis_deploy.yml
+id: analysis_deploy
+namespace: company.team
+
+tasks:
+  - id: git_namespace_sync
+    type: io.kestra.plugin.git.SyncNamespaceFiles
+    namespace: company.team
+    gitDirectory: scripts_for_flow
+    url: "{{ secret('GIT_REPO_URL') }}"
+    username: "{{ secret('GIT_USERNAME') }}"
+    password: "{{ secret('GIT_TOKEN') }}"
+    branch: main
+    
+  - id: put_leads_analysis
+    type: io.kestra.plugin.scripts.python.Commands
+    namespaceFiles:
+      enabled: true
+    taskRunner:
+      type: io.kestra.plugin.scripts.runner.docker.Docker
+      image: options_python_img:latest
+      networkMode: "kestra_options_default"
+    containerImage: ghcr.io/kestra-io/pydata:latest
+    commands:
+      - python put_leads.py

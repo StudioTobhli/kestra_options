@@ -90,4 +90,20 @@ services:
     depends_on:
       kestra_postgres:
         condition: service_started
+
+  streamlit-dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    image: streamlit-dashboard:latest
+    container_name: streamlit-dashboard
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./scripts_for_flow:/app/scripts
+    environment:
+      - DATABASE_HOST=pgdatabase
+    depends_on:
+      - pgdatabase
+    restart: unless-stopped
     
