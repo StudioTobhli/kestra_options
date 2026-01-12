@@ -15,7 +15,11 @@ import numpy as np
 from sqlalchemy import create_engine
 from datetime import datetime, timedelta
 import os
-
+from sqlalchemy.types import Float
+from sqlalchemy.types import Date
+from sqlalchemy.types import DateTime
+from sqlalchemy.types import VARCHAR
+from sqlalchemy.types import Integer
 
 def calculate_up_vs_pri_day_vs_8day(row, stock_hist_data):
     """
