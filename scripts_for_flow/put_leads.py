@@ -219,7 +219,45 @@ def main():
         .head(3)
         .reset_index(drop=True)
     )
-    
+
+    # Prepare to write put_candidates_df and put_candidate_prices to postgres
+    # Create schema for put_candidates_df table (put_candidates_tickers)
+    put_candidate_schema_dc = {
+        'ticker' : VARCHAR(20),
+        'current_price' : Float(),
+        'week_52_high' : Float(),
+        'week_52_low' : Float(),
+        'latest_close_date' : DateTime(),
+        'lower_qrt_52wk_bound' : Float(),
+        'lower_qrt_ind' : Integer(),
+        'up_vs_pri_day_vs_8day' : Integer(),
+        'up_vs_pri_wk_vs_8day' : Integer(),
+        'put_candidate_ind' : Integer()
+    }
+
+    # Write put candidate on ticker level to postgres
+    put_candidates_df.to_sql('put_candidate_tickers', con=engine, dtype=put_candidate_schema_dc, if_exists='replace', index=False)
+
+    # Create schema for put_candidates_prices table (put_candidate_options)
+    put_candidate_prc_sc_dc = {
+        'strike' : Float(),
+        'bid' : Float(),
+        'ask' : Float(),
+        'impliedVolatility' : Float(),
+        'exp_date' : DateTime(),
+        'as_of_date' : DateTime(),
+        'ticker' : VARCHAR(20),
+        'mid' : Float(),
+        'upfront_premium' : Float(),
+        'days_til_strike' : Integer(),
+        'money_aside' : Float(),
+        'raw_return' : Float(),
+        'annualized_return' : Float()
+    }
+
+    # write put candidates with option data to postgres
+    put_candidate_prices.to_sql('put_candidate_options', con=engine, dtype=put_candidate_prc_sc_dc, if_exists='replace', index=False)
+
     # Print results
     print("\n" + "="*80)
     print("RESULTS")
@@ -233,8 +271,9 @@ def main():
     print(put_candidate_prices)
     print(f"\nTotal put options selected: {len(put_candidate_prices)}")
     
-    return put_candidates_df, put_candidate_prices
+    # return put_candidates_df, put_candidate_prices
 
 
 if __name__ == "__main__":
-    put_candidates_df, put_candidate_prices = main()
+    # put_candidates_df, put_candidate_prices = main()
+    main()

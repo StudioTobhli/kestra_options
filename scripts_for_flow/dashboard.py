@@ -26,13 +26,23 @@ st.set_page_config(
 st.title("📊 Put Option Candidates Dashboard")
 st.markdown("---")
 
+# Read put_candidate tickers and put_candidate options data from postgres
+# Create postgres connection
+db_host = os.getenv('DATABASE_HOST', 'pgdatabase')
+# db_host = os.getenv('DATABASE_HOST', 'localhost'
+print(f"Connecting to database at {db_host}...")
+engine = create_engine(f'postgresql://root:root@{db_host}:5432/option_data')
+
+put_candidates_df = pd.read_sql_query("SELECT * FROM put_candidate_tickers", engine)
+put_candidate_prices = pd.read_sql_query("SELECT * FROM put_candidate_options", engine)
+
 # Run the analysis
-with st.spinner("Loading data and calculating candidates..."):
-    try:
-        put_candidates_df, put_candidate_prices = main()
-    except Exception as e:
-        st.error(f"Error running analysis: {str(e)}")
-        st.stop()
+# with st.spinner("Loading data and calculating candidates..."):
+#     try:
+#         put_candidates_df, put_candidate_prices = main()
+#     except Exception as e:
+#         st.error(f"Error running analysis: {str(e)}")
+#         st.stop()
 
 # Summary statistics
 col1, col2, col3, col4 = st.columns(4)
