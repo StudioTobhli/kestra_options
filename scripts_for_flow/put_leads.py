@@ -206,23 +206,26 @@ def main():
     
     # 7) Create put_candidate_prices
     print("\nFiltering and ranking put candidate prices...")
-    # Filter for candidates
-    candidates = put_candidates_df[put_candidates_df['put_candidate_ind'] == 1]['ticker']
+    # Set candidates to tickers with passing put_candidate_ind
+    # If none, then pass all tickers, to surface the highest annualized return
+    # Include put_candidate_ind in dataset
+    candidates = put_candidates_df[['ticker', 'put_candidate_ind']]
     
     # Filter put_option_data for these tickers and annualized_return >= 0.15
-    filtered_puts = put_option_data[
-        (put_option_data['ticker'].isin(candidates)) & 
-        (put_option_data['annualized_return'] >= 0.15)
-    ]
+    # filtered_puts = put_option_data[put_option_data['ticker'].isin(candidates['ticker'])]
     
     # Get top 3 by annualized_return per ticker
+    # originally used filtered_puts, but for now we can use all of put_option_data
     put_candidate_prices = (
-        filtered_puts
+        put_option_data
         .sort_values('annualized_return', ascending=False)
         .groupby('ticker')
         .head(3)
         .reset_index(drop=True)
     )
+
+    # Add indicator of whether it passed put_candidate_ind test
+    put_candidate_prices = put_candidate_prices.merge(candidates, on='ticker')
 
     # Prepare to write put_candidates_df and put_candidate_prices to postgres
     # Create schema for put_candidates_df table (put_candidates_tickers)
@@ -256,7 +259,8 @@ def main():
         'days_til_strike' : Integer(),
         'money_aside' : Float(),
         'raw_return' : Float(),
-        'annualized_return' : Float()
+        'annualized_return' : Float(),
+        'put_candidate_ind': Integer()
     }
 
     # write put candidates with option data to postgres
