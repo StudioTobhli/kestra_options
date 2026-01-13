@@ -209,23 +209,25 @@ def main():
     # Set candidates to tickers with passing put_candidate_ind
     # If none, then pass all tickers, to surface the highest annualized return
     # Include put_candidate_ind in dataset
-    candidates = put_candidates_df[['ticker', 'put_candidate_ind']]
+    candidates = put_candidates_df[['ticker', 'put_candidate_ind', 'current_price']]
     
-    # Filter put_option_data for these tickers and annualized_return >= 0.15
+    # Add current price and indicator of whether it passed put_candidate_ind test
+    put_option_data = put_option_data.merge(candidates, on='ticker')
+
+    # Filter put_option_data for these tickers with strike < current price
     # filtered_puts = put_option_data[put_option_data['ticker'].isin(candidates['ticker'])]
+    filtered_puts = put_option_data[put_option_data['strike'] < put_option_data['current_price']]
     
     # Get top 3 by annualized_return per ticker
     # originally used filtered_puts, but for now we can use all of put_option_data
     put_candidate_prices = (
-        put_option_data
+        filtered_puts
         .sort_values('annualized_return', ascending=False)
         .groupby('ticker')
         .head(3)
         .reset_index(drop=True)
     )
 
-    # Add indicator of whether it passed put_candidate_ind test
-    put_candidate_prices = put_candidate_prices.merge(candidates, on='ticker')
 
     # Prepare to write put_candidates_df and put_candidate_prices to postgres
     # Create schema for put_candidates_df table (put_candidates_tickers)
@@ -239,7 +241,7 @@ def main():
         'lower_qrt_ind' : Integer(),
         'up_vs_pri_day_vs_8day' : Integer(),
         'up_vs_pri_wk_vs_8day' : Integer(),
-        'put_candidate_ind' : Integer()
+        'put_candidate_ind' : Integer(),
     }
 
     # Write put candidate on ticker level to postgres
@@ -260,7 +262,8 @@ def main():
         'money_aside' : Float(),
         'raw_return' : Float(),
         'annualized_return' : Float(),
-        'put_candidate_ind': Integer()
+        'put_candidate_ind': Integer(),
+        'current_price' : Float()
     }
 
     # write put candidates with option data to postgres
