@@ -217,18 +217,19 @@ def main():
     # Filter put_option_data for these tickers with strike < current price
     # Filter to options with at least a 10% discount on the current price
     # filtered_puts = put_option_data[put_option_data['ticker'].isin(candidates['ticker'])]
-    # filtered_puts = put_option_data[put_option_data['strike'] < put_option_data['current_price']]
-    filtered_puts = put_option_data[put_option_data['strike']/put_option_data['current_price'] - 1 <= -0.095]
+    put_option_data = put_option_data[put_option_data['strike'] < put_option_data['current_price']].reset_index(drop=True)
+    # filtered_puts = put_option_data[put_option_data['strike']/put_option_data['current_price'] - 1 <= -0.095]
+    put_option_data['price_strike_discount'] = put_option_data[(put_option_data['strike']/put_option_data['current_price'] - 1) * 100]
     
     # Get top 3 by annualized_return per ticker
     # originally used filtered_puts, but for now we can use all of put_option_data
-    put_candidate_prices = (
-        filtered_puts
-        .sort_values('annualized_return', ascending=False)
-        .groupby('ticker')
-        .head(3)
-        .reset_index(drop=True)
-    )
+    # put_candidate_prices = (
+    #     filtered_puts
+    #     .sort_values('annualized_return', ascending=False)
+    #     .groupby('ticker')
+    #     .head(3)
+    #     .reset_index(drop=True)
+    # )
 
 
     # Prepare to write put_candidates_df and put_candidate_prices to postgres
@@ -265,11 +266,13 @@ def main():
         'raw_return' : Float(),
         'annualized_return' : Float(),
         'put_candidate_ind': Integer(),
-        'current_price' : Float()
+        'current_price' : Float(),
+        'price_strike_discount' : Float()
     }
 
     # write put candidates with option data to postgres
-    put_candidate_prices.to_sql('put_candidate_options', con=engine, dtype=put_candidate_prc_sc_dc, if_exists='replace', index=False)
+    # put_candidate_prices.to_sql('put_candidate_options', con=engine, dtype=put_candidate_prc_sc_dc, if_exists='replace', index=False)
+    put_option_data.to_sql('put_candidate_options', con=engine, dtype=put_candidate_prc_sc_dc, if_exists='replace', index=False)
 
     # Print results
     print("\n" + "="*80)
@@ -280,8 +283,6 @@ def main():
     print(f"\nTotal candidates: {put_candidates_df['put_candidate_ind'].sum()} out of {len(put_candidates_df)} tickers")
     
     print("\n" + "="*80)
-    print("\nput_candidate_prices:")
-    print(put_candidate_prices)
     print(f"\nTotal put options selected: {len(put_candidate_prices)}")
     
     # return put_candidates_df, put_candidate_prices
