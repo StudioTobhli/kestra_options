@@ -33,8 +33,22 @@ db_host = os.getenv('DATABASE_HOST', 'pgdatabase')
 print(f"Connecting to database at {db_host}...")
 engine = create_engine(f'postgresql://root:root@{db_host}:5432/option_data')
 
+put_option_qry = """
+SELECT ticker
+     , strike
+     , exp_date
+     , bid
+     , ask
+     , mid
+     , upfront_premium
+     , money_aside
+     , raw_return
+     , annualized_return
+  FROM put_candidate_options
+"""
+
 put_candidates_df = pd.read_sql_query("SELECT * FROM put_candidate_tickers", engine)
-put_candidate_prices = pd.read_sql_query("SELECT * FROM put_candidate_options", engine)
+put_candidate_prices = pd.read_sql_query(put_option_qry, engine)
 
 # Run the analysis
 # with st.spinner("Loading data and calculating candidates..."):
@@ -67,7 +81,7 @@ if len(put_candidate_prices) > 0:
     # Format the dataframe for display
     display_df = put_candidate_prices.copy()
     display_df['annualized_return'] = display_df['annualized_return'].apply(lambda x: f"{x:.2%}")
-    display_df['raw_return'] = display_df['raw_return'].apply(lambda x: f"{x:.4f}")
+    display_df['raw_return'] = display_df['raw_return'].apply(lambda x: f"{x:.2%}")
     display_df['upfront_premium'] = display_df['upfront_premium'].apply(lambda x: f"${x:,.2f}")
     display_df['money_aside'] = display_df['money_aside'].apply(lambda x: f"${x:,.2f}")
     
@@ -93,7 +107,7 @@ st.markdown("---")
 # Candidate summary table
 st.subheader("📈 Candidate Summary")
 if len(put_candidates_df) > 0:
-    summary_cols = ['ticker', 'current_price', 'lower_qrt_ind', 
+    summary_cols = ['ticker', 'current_price', 'week_52_high', 'week_52_low', 'lower_qrt_ind', 
                     'up_vs_pri_day_vs_8day', 'up_vs_pri_wk_vs_8day', 'put_candidate_ind']
     st.dataframe(
         put_candidates_df[summary_cols],

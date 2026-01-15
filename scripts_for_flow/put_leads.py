@@ -215,8 +215,10 @@ def main():
     put_option_data = put_option_data.merge(candidates, on='ticker')
 
     # Filter put_option_data for these tickers with strike < current price
+    # Filter to options with at least a 10% discount on the current price
     # filtered_puts = put_option_data[put_option_data['ticker'].isin(candidates['ticker'])]
-    filtered_puts = put_option_data[put_option_data['strike'] < put_option_data['current_price']]
+    # filtered_puts = put_option_data[put_option_data['strike'] < put_option_data['current_price']]
+    filtered_puts = put_option_data[put_option_data['strike']/put_option_data['current_price'] - 1 <= -0.095]
     
     # Get top 3 by annualized_return per ticker
     # originally used filtered_puts, but for now we can use all of put_option_data
