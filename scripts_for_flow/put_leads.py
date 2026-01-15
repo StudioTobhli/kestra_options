@@ -283,7 +283,7 @@ def main():
     print(f"\nTotal candidates: {put_candidates_df['put_candidate_ind'].sum()} out of {len(put_candidates_df)} tickers")
     
     print("\n" + "="*80)
-    print(f"\nTotal put options selected: {len(put_candidate_prices)}")
+    print(f"\nTotal put options selected: {len(put_option_data)}")
     
     # return put_candidates_df, put_candidate_prices
 
