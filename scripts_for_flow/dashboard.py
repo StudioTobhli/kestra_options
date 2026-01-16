@@ -119,15 +119,14 @@ if len(put_candidate_prices) > 0:
         step=0.5
     )
 
-
     # Rough Claude
 
     # Apply filters
     filtered_df = display_df.copy()[
         (display_df['days_til_strike'] >= min_days) & 
         (display_df['days_til_strike'] <= max_days) &
-        (display_df['price_discount'] >= min_discount) &
-        (display_df['price_discount'] <= max_discount)
+        (display_df['price_strike_discount'] >= min_discount) &
+        (display_df['price_strike_discount'] <= max_discount)
     ].reset_index(drop=True)
 
     # Get top 3 per ticker by annualized_return
@@ -140,6 +139,7 @@ if len(put_candidate_prices) > 0:
     )
 
     # Display results
+    st.subheader(f"filtered_df ({len(filtered_df)} total)")
     st.subheader(f"Top 3 Options per Ticker ({len(top_3_per_ticker)} total)")
     st.dataframe(
         top_3_per_ticker,
