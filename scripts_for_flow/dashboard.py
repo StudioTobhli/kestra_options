@@ -33,23 +33,19 @@ db_host = os.getenv('DATABASE_HOST', 'pgdatabase')
 print(f"Connecting to database at {db_host}...")
 engine = create_engine(f'postgresql://root:root@{db_host}:5432/option_data')
 
-# put_option_qry = """
-# SELECT ticker
-#      , strike
-#      , exp_date
-#      , bid
-#      , ask
-#      , mid
-#      , upfront_premium
-#      , money_aside
-#      , raw_return
-#      , annualized_return
-#   FROM put_candidate_options
-# """
+put_option_qry = """
+SELECT *
+  FROM put_candidate_options
+ WHERE 1=1
+       AND bid > 0
+       AND ask > 0
+       AND days_til_strike >= 1
+"""
 
 
 put_candidates_df = pd.read_sql_query("SELECT * FROM put_candidate_tickers", engine)
-put_candidate_prices = pd.read_sql_query("SELECT * FROM put_candidate_options", engine)
+# put_candidate_prices = pd.read_sql_query("SELECT * FROM put_candidate_options", engine)
+put_candidate_prices = pd.read_sql_query(put_option_qry, engine)
 
 # Run the analysis
 # with st.spinner("Loading data and calculating candidates..."):
@@ -86,17 +82,20 @@ if len(put_candidate_prices) > 0:
     display_df['upfront_premium'] = display_df['upfront_premium'].apply(lambda x: f"${x:,.2f}")
     display_df['money_aside'] = display_df['money_aside'].apply(lambda x: f"${x:,.2f}")
     
+    
     # Sidebar filters
     st.sidebar.header("Filters")
 
     # Days til strike filter
-    min_days = st.sidebar.number_input(
+    # min_days = st.sidebar.number_input(
+    min_days = st.sidebar.slider(      
         "Min Days til Strike", 
         min_value=0, 
-        value=0, 
+        value=7, 
         step=1
     )
-    max_days = st.sidebar.number_input(
+    # max_days = st.sidebar.number_input(
+    max_days = st.sidebar.slider(
         "Max Days til Strike", 
         min_value=0, 
         value=365, 
@@ -108,7 +107,7 @@ if len(put_candidate_prices) > 0:
         "Min Price Discount (%)", 
         min_value=0.0, 
         max_value=100.0, 
-        value=0.0, 
+        value=10.0, 
         step=0.5
     )
     max_discount = st.sidebar.slider(
@@ -119,8 +118,6 @@ if len(put_candidate_prices) > 0:
         step=0.5
     )
 
-    # Rough Claude
-
     # Apply filters
     filtered_df = display_df.copy()[
         (display_df['days_til_strike'] >= min_days) & 
@@ -129,6 +126,8 @@ if len(put_candidate_prices) > 0:
         (display_df['price_strike_discount'] <= max_discount)
     ].reset_index(drop=True)
 
+    filtered_df['price_strike_discount'] = filtered_df['price_strike_discount'].apply(lambda x: f"{x:.2%}")
+
     # Get top 3 per ticker by annualized_return
     top_3_per_ticker = (
         filtered_df
@@ -136,7 +135,8 @@ if len(put_candidate_prices) > 0:
         .groupby('ticker')
         .head(3)
         .reset_index(drop=True)
-    )
+    )[['ticker', 'put_candidate_ind', 'strike', 'current_price', 'price_strike_discount', 'exp_date',
+       'bid', 'ask', 'mid', 'upfront_premium', 'annualized_return', 'raw_return']]
 
     # Display results
     st.subheader(f"filtered_df ({len(filtered_df)} total)")
@@ -148,20 +148,6 @@ if len(put_candidate_prices) > 0:
     )
     # st.dataframe(top_3_per_ticker)
 
-    # Optional: Show count by ticker
-    st.subheader("Results by Ticker")
-    ticker_counts = top_3_per_ticker['ticker'].value_counts()
-    st.bar_chart(ticker_counts)
-
-    # Rough Claude
-
-
-    # st.dataframe(
-    #     display_df,
-    #     use_container_width=True,
-    #     hide_index=True
-    # )
-    
     # Download button
     csv = put_candidate_prices.to_csv(index=False)
     st.download_button(

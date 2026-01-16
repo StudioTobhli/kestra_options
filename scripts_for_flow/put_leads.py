@@ -220,7 +220,7 @@ def main():
     put_option_data = put_option_data[put_option_data['strike'] < put_option_data['current_price']].reset_index(drop=True)
     # filtered_puts = put_option_data[put_option_data['strike']/put_option_data['current_price'] - 1 <= -0.095]
     # Convert negative price discount into positive number
-    put_option_data['price_strike_discount'] = (put_option_data['strike']/put_option_data['current_price'] - 1) * 100 * -1
+    put_option_data['price_strike_discount'] = (put_option_data['strike']/put_option_data['current_price'] - 1) * -1
     
     # Get top 3 by annualized_return per ticker
     # originally used filtered_puts, but for now we can use all of put_option_data
