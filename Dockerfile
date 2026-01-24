@@ -11,6 +11,7 @@ RUN pip install --no-cache-dir \
     yfinance \
     gspread \
     oauth2client \
+    gspread_dataframe \
     pandas \
     sqlalchemy \
     psycopg2-binary

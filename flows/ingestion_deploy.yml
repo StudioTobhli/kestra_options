@@ -82,3 +82,15 @@ tasks:
     containerImage: ghcr.io/kestra-io/pydata:latest
     commands:
       - python put_leads.py
+
+  - id: put_to_sheets
+    type: io.kestra.plugin.scripts.python.Commands
+    namespaceFiles:
+      enabled: true
+    taskRunner:
+      type: io.kestra.plugin.scripts.runner.docker.Docker
+      image: options_python_img:latest
+      networkMode: "kestra_options_default"
+    containerImage: ghcr.io/kestra-io/pydata:latest
+    commands:
+      - python write_to_sheets.py

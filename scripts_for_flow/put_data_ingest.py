@@ -15,7 +15,7 @@ from sqlalchemy.types import VARCHAR
 os.getcwd()
 
 # Connect to google sheet that contains all potential tickers we want to look out for a put
-gc = gspread.service_account(filename='TLAnalyticsSVCAccnt.json')
+gc = gspread.service_account(filename='studiotlanalyticsSvcAccnt-a59159d08cb6.json')
 sh = gc.open("Put_Candidates")
 wksht = sh.get_worksheet(0)
 put_candidate_df = pd.DataFrame(wksht.get_all_records())
