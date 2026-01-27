@@ -44,6 +44,9 @@ services:
       retries: 10
 
   python-pipeline:
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: options_python_img:latest
 
   kestra:

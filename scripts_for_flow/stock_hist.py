@@ -37,7 +37,7 @@ history_list = []
 for ticker_symbol in stock_dim_df['ticker']:
     try:
         ticker = yf.Ticker(ticker_symbol)
-        hist = ticker.history(period="5d")
+        hist = ticker.history(period="1mo")
         
         if not hist.empty:
             # Reset index to make 'Date' a column
