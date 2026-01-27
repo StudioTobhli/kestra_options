@@ -35,3 +35,17 @@ hist_ws = hist_sh.get_worksheet(0)
 set_with_dataframe(hist_ws, put_stock_hist_df, include_index=False, include_column_header=True, resize=True)
 
 print(f"Wrote{len(put_stock_hist_df)} rows to put_stock_hist_data")
+
+# Write put candidate meta data
+put_candidate_qry = """
+SELECT * FROM put_candidate_tickers
+"""
+
+put_candidate_df = pd.read_sql(put_candidate_qry, engine)
+
+# Open put candidates gsheet
+put_cand_sh = gc.open("Put_Candidates")
+put_cand_ws = put_cand_sh.get_worksheet(0)
+
+# Write to put candidates gsheet
+set_with_dataframe(put_cand_ws, put_candidate_df, include_index=False, include_column_header=True, resize=True)
