@@ -202,7 +202,7 @@ stock_dim_df = stock_dim_df[
 
 ```python
 # Service account authentication
-gc = gspread.service_account(filename='studiotlanalyticsSvcAccnt-a59159d08cb6.json')
+gc = gspread.service_account(filename='[google_credentials].json')
 sh = gc.open("Sheet_Name")
 wksht = sh.get_worksheet(0)
 df = pd.DataFrame(wksht.get_all_records())
