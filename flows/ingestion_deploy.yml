@@ -93,7 +93,7 @@ tasks:
       networkMode: "kestra_options_default"
     containerImage: ghcr.io/kestra-io/pydata:latest
     commands:
-      - python write_to_sheets.py
+      - python put_to_sheets.py
 
   - id: call_leads
     type: io.kestra.plugin.scripts.python.Commands
