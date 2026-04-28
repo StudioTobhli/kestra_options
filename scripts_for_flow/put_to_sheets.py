@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from sqlalchemy import create_engine
 import gspread
 from gspread_dataframe import set_with_dataframe
@@ -11,7 +12,14 @@ gc = gspread.service_account(filename='studiotlanalyticsSvcAccnt-a59159d08cb6.js
 sh = gc.open("put_candidate_gs_src")
 wksht = sh.get_worksheet(0)
 
-set_with_dataframe(wksht, put_options_df, include_index=False, include_column_header=True, resize=True)
+# Remove records where annualized returns returns inf
+put_opt_clean_df = put_options_df[~np.isinf(put_options_df['annualized_return'])].copy()
+
+# Optional: Print how many rows were dropped
+dropped_count = len(put_options_df) - len(put_opt_clean_df)
+print(f"Dropped {dropped_count} rows with infinite annual returns.")
+
+set_with_dataframe(wksht, put_opt_clean_df, include_index=False, include_column_header=True, resize=True)
 
 print(f"Wrote {len(put_options_df)} rows to Google Sheets")
 
