@@ -1,6 +1,12 @@
 id: ingestion_deploy
 namespace: company.team
 
+triggers:
+  - id: weekday_schedule
+    type: io.kestra.plugin.core.trigger.Schedule
+    cron: "0 7 * * 1-5"
+    timezone: America/Los_Angeles
+
 tasks:
   - id: git_namespace_sync
     type: io.kestra.plugin.git.SyncNamespaceFiles
