@@ -1,26 +1,32 @@
 # AGENTS.md - Agentic Coding Guidelines
 
-This project is a Kestra-based workflow orchestration system for options trading data pipelines. It uses Python scripts with PostgreSQL database and Docker.
+This project is a Kestra-based workflow orchestration system for options trading data pipelines. It uses Python scripts with PostgreSQL database and Docker. The repo is structured as a monorepo to support multiple pipelines; each pipeline gets its own subdirectory under `flows/` and `scripts_for_flow/`.
 
 ## Project Structure
 
 ```
-/home/jedah/ai_test/kestra_options
-├── docker-compose.yml          # Main orchestration (Kestra, PostgreSQL, pgadmin, Streamlit)
-├── Dockerfile                  # Python pipeline image
-├── Dockerfile.streamlit        # Streamlit dashboard image
-├── flows/                       # Kestra flow definitions (YAML)
-│   ├── ingestion_deploy.yml
-│   └── analysis_deploy.yml
-├── scripts_for_flow/            # Python scripts executed by Kestra flows
-│   ├── holdings_ingest.py
-│   ├── stock_dim_ingest.py
-│   ├── put_data_ingest.py
-│   ├── call_data_ingest.py
-│   ├── stock_hist.py
-│   ├── put_leads.py
-│   └── write_to_sheets.py
-└── dev_notebooks/               # Jupyter notebooks for development
+/home/jedah/kestra_options
+├── docker-compose.yml              # Main orchestration (Kestra, PostgreSQL, pgadmin, Streamlit)
+├── Dockerfile                      # Python pipeline image
+├── Dockerfile.streamlit            # Streamlit dashboard image (inactive — dashboard moved to Looker Studio)
+├── flows/
+│   ├── options/                    # Kestra flow YAMLs for the options pipeline
+│   │   ├── ingestion_deploy.yml
+│   │   └── analysis_deploy.yml
+│   └── jobs/                       # Placeholder for future jobs pipeline flows
+├── scripts_for_flow/
+│   ├── options/                    # Python scripts executed by the options pipeline flows
+│   │   ├── holdings_ingest.py
+│   │   ├── stock_dim_ingest.py
+│   │   ├── put_data_ingest.py
+│   │   ├── call_data_ingest.py
+│   │   ├── stock_hist.py
+│   │   ├── put_leads.py
+│   │   ├── call_leads.py
+│   │   ├── put_to_sheets.py
+│   │   └── call_to_sheets.py
+│   └── jobs/                       # Placeholder for future jobs pipeline scripts
+└── dev_notebooks/                  # Jupyter notebooks for development
 ```
 
 ---
@@ -63,10 +69,10 @@ docker-compose up -d pgadmin
 
 ```bash
 # Run a script locally (requires PostgreSQL running)
-python scripts_for_flow/holdings_ingest.py
+python scripts_for_flow/options/holdings_ingest.py
 
 # Run with Docker
-docker-compose run --rm python-pipeline python scripts_for_flow/holdings_ingest.py
+docker-compose run --rm python-pipeline python scripts_for_flow/options/holdings_ingest.py
 ```
 
 ### Testing
@@ -192,7 +198,7 @@ stock_dim_df = stock_dim_df[
 
 ### Kestra Flow Development
 
-- Flow files are YAML in `flows/`
+- Flow files are YAML in `flows/options/` (or `flows/jobs/` for the jobs pipeline)
 - Use descriptive task IDs
 - Include namespace: `company.team`
 - Set `namespaceFiles.enabled: true` for Python tasks
@@ -222,14 +228,14 @@ df = pd.DataFrame(wksht.get_all_records())
 
 ### Adding a New Ingestion Script
 
-1. Create `scripts_for_flow/new_script.py`
+1. Create `scripts_for_flow/options/new_script.py` (or `scripts_for_flow/jobs/` for the jobs pipeline)
 2. Add dependencies to `Dockerfile` if needed
 3. Test locally with PostgreSQL running
-4. Add as task to relevant flow in `flows/`
+4. Add as task to relevant flow in `flows/options/`
 
 ### Modifying Kestra Flows
 
-1. Edit YAML file in `flows/`
+1. Edit YAML file in `flows/options/`
 2. Deploy via Kestra UI or push to git and sync namespace
 3. Test with "Execute" button in Kestra UI
 
