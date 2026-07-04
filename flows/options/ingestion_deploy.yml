@@ -11,7 +11,7 @@ tasks:
   - id: git_namespace_sync
     type: io.kestra.plugin.git.SyncNamespaceFiles
     namespace: company.team
-    gitDirectory: scripts_for_flow
+    gitDirectory: scripts_for_flow/options
     url: "{{ secret('GIT_REPO_URL') }}"
     username: "{{ secret('GIT_USERNAME') }}"
     password: "{{ secret('GIT_TOKEN') }}"
