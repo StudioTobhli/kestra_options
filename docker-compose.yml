@@ -104,13 +104,13 @@ services:
   streamlit-dashboard:
     build:
       context: .
-      dockerfile: Dockerfile.streamlit
+      dockerfile: Dockerfile
     image: streamlit-dashboard:latest
     container_name: streamlit-dashboard
     ports:
       - "8501:8501"
     volumes:
-      - ./scripts_for_flow:/app/scripts
+      - ./scripts_for_flow/options:/app/scripts
     environment:
       - DATABASE_HOST=pgdatabase
     depends_on:
