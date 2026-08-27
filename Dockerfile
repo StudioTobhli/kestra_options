@@ -14,6 +14,4 @@ RUN pip install --no-cache-dir \
     gspread_dataframe \
     pandas \
     sqlalchemy \
-    psycopg2-binary \
-    streamlit \
-    numpy
+    psycopg2-binary
