@@ -118,12 +118,12 @@ if len(put_candidate_prices) > 0:
         step=0.5
     )
 
-    # Apply filters
+    # Apply filters (slider returns percent 0-100, data is stored as decimal 0-1)
     filtered_df = display_df.copy()[
         (display_df['days_til_strike'] >= min_days) & 
         (display_df['days_til_strike'] <= max_days) &
-        (display_df['price_strike_discount'] >= min_discount) &
-        (display_df['price_strike_discount'] <= max_discount)
+        (display_df['price_strike_discount'] >= min_discount / 100.0) &
+        (display_df['price_strike_discount'] <= max_discount / 100.0)
     ].reset_index(drop=True)
 
     filtered_df['price_strike_discount'] = filtered_df['price_strike_discount'].apply(lambda x: f"{x:.2%}")
