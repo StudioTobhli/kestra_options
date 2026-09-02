@@ -7,3 +7,4 @@ script_tests/
 .pytest_cache/
 __pycache__/
 *.pyc
+src_files/
