@@ -5,3 +5,5 @@ studiotlanalyticsSvcAccnt-a59159d08cb6.json
 **/.ipynb_checkpoints/
 script_tests/
 .pytest_cache/
+__pycache__/
+*.pyc

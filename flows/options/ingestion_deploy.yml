@@ -25,6 +25,8 @@ tasks:
       type: io.kestra.plugin.scripts.runner.docker.Docker
       image: options_python_img:latest
       networkMode: "kestra_options_default"
+      volumes:
+        - "/home/jedah/Projects/kestra_options/src_files:/app/src_files:ro"
     containerImage: ghcr.io/kestra-io/pydata:latest
     commands:
       - python put_data_ingest.py
@@ -37,6 +39,8 @@ tasks:
       type: io.kestra.plugin.scripts.runner.docker.Docker
       image: options_python_img:latest
       networkMode: "kestra_options_default"
+      volumes:
+        - "/home/jedah/Projects/kestra_options/src_files:/app/src_files:ro"
     containerImage: ghcr.io/kestra-io/pydata:latest
     commands:
       - python holdings_ingest.py

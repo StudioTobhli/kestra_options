@@ -139,7 +139,6 @@ if len(put_candidate_prices) > 0:
        'bid', 'ask', 'mid', 'upfront_premium', 'annualized_return', 'raw_return']]
 
     # Display results
-    st.subheader(f"filtered_df ({len(filtered_df)} total)")
     st.subheader(f"Top 3 Options per Ticker ({len(top_3_per_ticker)} total)")
     st.dataframe(
         top_3_per_ticker,

@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 import yfinance as yf
-import gspread
+
 from datetime import datetime
 from time import time
 # Use SQLAlchemy to create a connection to postgres
@@ -23,11 +23,15 @@ os.getcwd()
 # * Specify data types
 # * Upload holdings dataframe to postgres
 
-# Connect to google sheet that contains all potential tickers to sell a call for
-gc = gspread.service_account(filename='studiotlanalyticsSvcAccnt-a59159d08cb6.json')
-sh = gc.open("Select_Holdings")
-wksht = sh.get_worksheet(0)
-holdings_df = pd.DataFrame(wksht.get_all_records())
+HOLDINGS_CSV_PATH = os.environ.get('HOLDINGS_CSV_PATH', '/app/src_files/select_holdings.csv')
+holdings_df = pd.read_csv(HOLDINGS_CSV_PATH, encoding='utf-8-sig')
+
+holdings_df['avg_cost_basis'] = (
+    holdings_df['avg_cost_basis'].astype(str)
+    .str.replace('$', '', regex=False)
+    .str.replace(',', '', regex=False)
+    .astype(float)
+)
 
 holdings_df['as_of_date'] = datetime.now()
 

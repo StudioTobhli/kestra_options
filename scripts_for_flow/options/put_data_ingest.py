@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 import yfinance as yf
-import gspread
+
 from datetime import datetime
 from time import time
 import pytz
@@ -14,11 +14,9 @@ from sqlalchemy.types import VARCHAR
 
 os.getcwd()
 
-# Connect to google sheet that contains all potential tickers we want to look out for a put
-gc = gspread.service_account(filename='studiotlanalyticsSvcAccnt-a59159d08cb6.json')
-sh = gc.open("Put_Candidates")
-wksht = sh.get_worksheet(0)
-put_candidate_df = pd.DataFrame(wksht.get_all_records())
+PUT_CANDIDATES_CSV_PATH = os.environ.get('PUT_CANDIDATES_CSV_PATH', '/app/src_files/put_candidates.csv')
+put_candidate_df = pd.read_csv(PUT_CANDIDATES_CSV_PATH, encoding='utf-8-sig')
+
 
 
 # ### Test single ticker from Put candidates
