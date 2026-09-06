@@ -9,7 +9,9 @@ import streamlit as st
 import pandas as pd
 import sys
 import os
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
+from time import time
+import plotly.graph_objects as go
 
 # Add current directory to path to import put_leads
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -157,6 +159,60 @@ if len(put_candidate_prices) > 0:
     )
 else:
     st.warning("No put candidates found matching the criteria.")
+
+st.markdown("---")
+
+# ### Daily Price Trend Chart
+# - Data source: stock_hist_data (populated by stock_hist.py each morning)
+# - Line chart of daily closing price for the last month of trading days
+# - Ticker selectable from put_candidate_tickers (already loaded above)
+st.subheader("Closing Price 1-month History")
+
+ticker_list = sorted(put_candidates_df['ticker'].dropna().unique().tolist())
+
+if not ticker_list:
+    st.warning("No candidate tickers available to chart.")
+else:
+    selected_ticker = st.selectbox("Ticker", ticker_list, key="price_trend_ticker")
+
+    price_sql = """
+        SELECT
+            hist_date,
+            close
+        FROM stock_hist_data
+        WHERE ticker = :ticker
+          AND as_of_date = (SELECT MAX(as_of_date) FROM stock_hist_data)
+        ORDER BY hist_date
+    """
+
+    chart_start_time = time()
+    try:
+        price_df = pd.read_sql_query(text(price_sql), con=engine, params={'ticker': selected_ticker})
+    except Exception as e:
+        st.error(f"Error loading price history for {selected_ticker}: {e}")
+        price_df = pd.DataFrame(columns=['hist_date', 'close'])
+
+    if price_df.empty:
+        st.info(f"No price history available for {selected_ticker}. Run the stock_hist ingest first.")
+    else:
+        fig = go.Figure(data=[
+            go.Scatter(
+                x=price_df['hist_date'],
+                y=price_df['close'],
+                mode='lines',
+                name=selected_ticker
+            )
+        ])
+        fig.update_layout(
+            title="Closing Price 1-month History",
+            xaxis_title="Trading Day",
+            yaxis_title="Close ($)",
+            height=350,
+            margin=dict(t=40, b=20, l=20, r=20)
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+    print(f"Price trend chart query time: {time() - chart_start_time:.3f} seconds")
 
 st.markdown("---")
 

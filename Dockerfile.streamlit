@@ -1,7 +1,7 @@
 FROM options_python_img:latest
 
-# Add Streamlit
-RUN pip install --no-cache-dir streamlit
+# Add Streamlit and plotly (plotly powers the price trend chart)
+RUN pip install --no-cache-dir streamlit plotly
 
 # Set working directory
 WORKDIR /app/scripts
