@@ -26,7 +26,7 @@ tasks:
       image: options_python_img:latest
       networkMode: "kestra_options_default"
       volumes:
-        - "/home/jedah/Projects/kestra_options/src_files:/app/src_files:ro"
+        - "{{ envs.src_files_path | default('/home/jedah/Projects/kestra_options/src_files') }}:/app/src_files:ro"
     containerImage: ghcr.io/kestra-io/pydata:latest
     commands:
       - python put_data_ingest.py
@@ -40,7 +40,7 @@ tasks:
       image: options_python_img:latest
       networkMode: "kestra_options_default"
       volumes:
-        - "/home/jedah/Projects/kestra_options/src_files:/app/src_files:ro"
+        - "{{ envs.src_files_path | default('/home/jedah/Projects/kestra_options/src_files') }}:/app/src_files:ro"
     containerImage: ghcr.io/kestra-io/pydata:latest
     commands:
       - python holdings_ingest.py

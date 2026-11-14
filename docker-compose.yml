@@ -64,7 +64,7 @@ services:
     volumes:
       - kestra_data:/app/storage
       - /var/run/docker.sock:/var/run/docker.sock
-      - /tmp/kestra-wd:/tmp/kestra-wd
+      - ${KESTRA_WD:-/tmp/kestra-wd}:${KESTRA_WD:-/tmp/kestra-wd}
       - ./scripts_for_flow:/app/scripts
       - ./flows:/app/flows
     env_file:
@@ -92,7 +92,7 @@ services:
             type: postgres
           tasks:
             tmpDir:
-              path: /tmp/kestra-wd/tmp
+              path: ${KESTRA_WD:-/tmp/kestra-wd}/tmp
           url: http://localhost:8080/
           plugins:
             configurations:
