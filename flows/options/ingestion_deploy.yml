@@ -2,10 +2,15 @@ id: ingestion_deploy
 namespace: company.team
 
 triggers:
-  - id: weekday_schedule
-    type: io.kestra.plugin.core.trigger.Schedule
-    cron: "0 7 * * 1-5"
-    timezone: America/Los_Angeles
+  - id: after_sync_flows
+    type: io.kestra.plugin.core.trigger.Flow
+    conditions:
+      - type: io.kestra.plugin.core.condition.ExecutionFlow
+        namespace: company.team
+        flowId: sync_flows
+      - type: io.kestra.plugin.core.condition.ExecutionStatus
+        in:
+          - SUCCESS
 
 tasks:
   - id: git_namespace_sync
