@@ -53,7 +53,7 @@ services:
     image: options_python_img:latest
 
   kestra:
-    image: kestra/kestra:v1.1
+    image: kestra/kestra:v1.2
     restart: unless-stopped
     pull_policy: always
     # Note that this setup with a root user is intended for development purpose.
