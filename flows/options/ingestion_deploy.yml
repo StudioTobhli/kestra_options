@@ -2,10 +2,15 @@ id: ingestion_deploy
 namespace: company.team
 
 triggers:
-  - id: weekday_schedule
-    type: io.kestra.plugin.core.trigger.Schedule
-    cron: "0 7 * * 1-5"
-    timezone: America/Los_Angeles
+  - id: after_sync_flows
+    type: io.kestra.plugin.core.trigger.Flow
+    conditions:
+      - type: io.kestra.plugin.core.condition.ExecutionFlow
+        namespace: company.team
+        flowId: sync_flows
+      - type: io.kestra.plugin.core.condition.ExecutionStatus
+        in:
+          - SUCCESS
 
 tasks:
   - id: git_namespace_sync
@@ -26,7 +31,7 @@ tasks:
       image: options_python_img:latest
       networkMode: "kestra_options_default"
       volumes:
-        - "/home/jedah/Projects/kestra_options/src_files:/app/src_files:ro"
+        - "{{ envs.src_files_path | default('/home/jedah/Projects/kestra_options/src_files') }}:/app/src_files:ro"
     containerImage: ghcr.io/kestra-io/pydata:latest
     commands:
       - python put_data_ingest.py
@@ -40,7 +45,7 @@ tasks:
       image: options_python_img:latest
       networkMode: "kestra_options_default"
       volumes:
-        - "/home/jedah/Projects/kestra_options/src_files:/app/src_files:ro"
+        - "{{ envs.src_files_path | default('/home/jedah/Projects/kestra_options/src_files') }}:/app/src_files:ro"
     containerImage: ghcr.io/kestra-io/pydata:latest
     commands:
       - python holdings_ingest.py
@@ -93,18 +98,6 @@ tasks:
     commands:
       - python put_leads.py
 
-  - id: put_to_sheets
-    type: io.kestra.plugin.scripts.python.Commands
-    namespaceFiles:
-      enabled: true
-    taskRunner:
-      type: io.kestra.plugin.scripts.runner.docker.Docker
-      image: options_python_img:latest
-      networkMode: "kestra_options_default"
-    containerImage: ghcr.io/kestra-io/pydata:latest
-    commands:
-      - python put_to_sheets.py
-
   - id: call_leads
     type: io.kestra.plugin.scripts.python.Commands
     namespaceFiles:
@@ -116,15 +109,3 @@ tasks:
     containerImage: ghcr.io/kestra-io/pydata:latest
     commands:
       - python call_leads.py
-
-  - id: call_to_sheets
-    type: io.kestra.plugin.scripts.python.Commands
-    namespaceFiles:
-      enabled: true
-    taskRunner:
-      type: io.kestra.plugin.scripts.runner.docker.Docker
-      image: options_python_img:latest
-      networkMode: "kestra_options_default"
-    containerImage: ghcr.io/kestra-io/pydata:latest
-    commands:
-      - python call_to_sheets.py

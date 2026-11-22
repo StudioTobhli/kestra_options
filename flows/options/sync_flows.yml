@@ -1,0 +1,20 @@
+id: sync_flows
+namespace: company.team
+description: Pull flow YAMLs from Git (main) into Kestra, then ingestion_deploy runs on success.
+
+triggers:
+  - id: weekday_schedule
+    type: io.kestra.plugin.core.trigger.Schedule
+    cron: "0 7 * * 1-5"
+    timezone: America/Los_Angeles
+
+tasks:
+  - id: sync_flows_from_git
+    type: io.kestra.plugin.git.SyncFlows
+    url: "{{ secret('GIT_REPO_URL') }}"
+    username: "{{ secret('GIT_USERNAME') }}"
+    password: "{{ secret('GIT_TOKEN') }}"
+    branch: main
+    gitDirectory: flows/options
+    targetNamespace: company.team
+    delete: false

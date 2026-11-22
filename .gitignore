@@ -8,3 +8,6 @@ script_tests/
 __pycache__/
 *.pyc
 src_files/
+
+# Local dev notes (not pushed)
+NOTES_mac_mini_setup.md

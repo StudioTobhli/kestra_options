@@ -13,5 +13,5 @@ RUN pip install --no-cache-dir \
     oauth2client \
     gspread_dataframe \
     pandas \
-    sqlalchemy \
+    "sqlalchemy<2.1" \
     psycopg2-binary
